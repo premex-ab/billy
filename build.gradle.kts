@@ -13,7 +13,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:8.2.2")
+        classpath("com.android.tools.build:gradle:8.12.1")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.22")
         classpath("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8")
         classpath("com.google.gms:google-services:4.4.2")
@@ -39,7 +39,7 @@ androidGitVersion {
 }
 
 val gitOrLocalVersion: String =
-    com.android.build.gradle.internal.cxx.configure.gradleLocalProperties(rootDir)
+    com.android.build.gradle.internal.cxx.configure.gradleLocalProperties(rootDir, providers)
         .getProperty("VERSION_NAME", androidGitVersion.name().replace("v", ""))
 
 version = gitOrLocalVersion
@@ -81,7 +81,7 @@ tasks.withType<Detekt>().configureEach {
 }
 
 fun isNonStable(version: String): Boolean {
-    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.toUpperCase().contains(it) }
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
     val regex = "^[0-9,.v-]+(-r)?$".toRegex()
     val isStable = stableKeyword || regex.matches(version)
     return isStable.not()

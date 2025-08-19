@@ -1,24 +1,23 @@
-import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
     id("com.android.library")
     id("kotlin-android")
     id("org.jetbrains.dokka") version "2.0.0"
-    id("com.vanniktech.maven.publish") version "0.29.0"
+    id("com.vanniktech.maven.publish") version "0.34.0"
 }
 
 
 
 mavenPublishing {
 
-    publishToMavenCentral(SonatypeHost.DEFAULT)
+    publishToMavenCentral()
     signAllPublications()
 
     pom {
         name.set("Billy")
         description.set("Billing flow")
         inceptionYear.set("2021")
-        url.set("https://github.com/warting/billy/")
+        url.set("https://github.com/premex-ab/billy")
         licenses {
             license {
                 name.set("MIT License")
@@ -34,9 +33,9 @@ mavenPublishing {
             }
         }
         scm {
-            url.set("https://github.com/warting/billy/")
-            connection.set("scm:git:git://github.com/warting/billy.git")
-            developerConnection.set("scm:git:ssh://git@github.com/warting/billy.git")
+            url.set("https://github.com/premex-ab/billy")
+            connection.set("scm:git:git://github.com/premex-ab/billy.git")
+            developerConnection.set("scm:git:ssh://git@github.com/premex-ab/billy.git")
         }
     }
 }
@@ -104,6 +103,7 @@ android {
 }
 
 kotlin {
+    jvmToolchain(21)
     // https://kotlinlang.org/docs/whatsnew14.html#explicit-api-mode-for-library-authors
     explicitApi()
 }

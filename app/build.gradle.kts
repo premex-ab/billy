@@ -7,7 +7,7 @@ plugins {
 
 
 val customApplicationId: String =
-    gradleLocalProperties(rootDir).getProperty("APPLICATION_ID", "se.warting.sample")
+    gradleLocalProperties(rootDir, providers).getProperty("APPLICATION_ID", "se.warting.sample")
 
 android {
     compileSdk = 36
@@ -69,6 +69,9 @@ android {
     namespace = "se.warting.sampleapp"
 }
 
+kotlin {
+    jvmToolchain(21)
+}
 
 dependencies {
 

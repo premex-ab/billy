@@ -81,7 +81,7 @@ dependencies {
     implementation(project(":flow"))
 
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
 
     implementation("androidx.core:core-ktx:1.17.0")
     implementation("androidx.appcompat:appcompat:1.7.1")

@@ -111,7 +111,7 @@ kotlin {
 
 dependencies {
 
-    api("androidx.startup:startup-runtime:1.1.1")
+    api("androidx.startup:startup-runtime:1.2.0")
 
     val billingVersion = "7.0.0"
     api("com.android.billingclient:billing-ktx:$billingVersion")

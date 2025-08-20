@@ -11,3 +11,4 @@ local.properties
 secrets.properties
 build-cache
 *.sarif
+.kotlin/

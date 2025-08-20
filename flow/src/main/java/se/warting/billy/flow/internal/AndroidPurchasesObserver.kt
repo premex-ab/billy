@@ -8,10 +8,7 @@ import androidx.lifecycle.LifecycleOwner
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
-import com.android.billingclient.api.PurchaseHistoryRecord
-import com.android.billingclient.api.PurchaseHistoryResponseListener
 import com.android.billingclient.api.PurchasesResponseListener
-import com.android.billingclient.api.QueryPurchaseHistoryParams
 import com.android.billingclient.api.QueryPurchasesParams
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -33,13 +30,6 @@ internal data class CombinedPurchaseData(
 internal class AndroidPurchasesObserver(
     private val billingClient: BillingClient,
 ) : PurchaseObserver, LifecycleEventObserver {
-
-    private val _subPurchasesHistoryStateFlow: MutableStateFlow<List<PurchaseHistoryRecord>> by lazy {
-        MutableStateFlow(listOf())
-    }
-    private val _itemPurchasesHistoryStateFlow: MutableStateFlow<List<PurchaseHistoryRecord>> by lazy {
-        MutableStateFlow(listOf())
-    }
 
     private val _subPurchasesStateFlow: MutableStateFlow<List<Purchase>> by lazy {
         MutableStateFlow(listOf())
@@ -79,7 +69,7 @@ internal class AndroidPurchasesObserver(
         ownedItemsList: List<Purchase>,
     ): ProductStatus {
 
-        val ownedItem = ownedItemsList.filter { it.skus.contains(product.name) }
+        val ownedItem = ownedItemsList.filter { it.products.contains(product.name) }
         if (ownedItem.isNotEmpty()) {
             return ProductStatus.Owned(product, ownedItem)
         }
@@ -100,20 +90,6 @@ internal class AndroidPurchasesObserver(
         }
     }
 
-    private val subHistoryObserver =
-        PurchaseHistoryResponseListener { billingResult, purchaseHistoryRecordList ->
-            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                _subPurchasesHistoryStateFlow.value = purchaseHistoryRecordList ?: listOf()
-            }
-        }
-
-    private val inappHistoryObserver =
-        PurchaseHistoryResponseListener { billingResult, purchaseHistoryRecordList ->
-            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                _itemPurchasesHistoryStateFlow.value = purchaseHistoryRecordList ?: listOf()
-            }
-        }
-
     private val subsPurchasesObserver = PurchasesResponseListener { billingResult, purchasesList ->
         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
             _subPurchasesStateFlow.value = purchasesList
@@ -130,24 +106,6 @@ internal class AndroidPurchasesObserver(
 
     override fun refreshStatus() {
         if (isConnected) {
-
-            val queryPurchaseHistorySubsParams = QueryPurchaseHistoryParams.newBuilder()
-                .setProductType(BillingClient.ProductType.SUBS)
-                .build()
-
-            val queryPurchaseHistoryInAppParams = QueryPurchaseHistoryParams.newBuilder()
-                .setProductType(BillingClient.ProductType.INAPP)
-                .build()
-
-            billingClient.queryPurchaseHistoryAsync(
-                queryPurchaseHistorySubsParams,
-                subHistoryObserver
-            )
-            billingClient.queryPurchaseHistoryAsync(
-                queryPurchaseHistoryInAppParams,
-                inappHistoryObserver
-            )
-
             val queryPurchasesSubsParams = QueryPurchasesParams.newBuilder()
                 .setProductType(BillingClient.ProductType.SUBS)
                 .build()

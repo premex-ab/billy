@@ -61,7 +61,6 @@ public class BillingProvider constructor(
 
             val billingClient = BillingClient.newBuilder(context)
                 .setListener(AndroidPurchasesUpdatedListener())
-                .enablePendingPurchases()
                 .build()
 
             val purchaseObserver = AndroidPurchasesObserver(billingClient).also {

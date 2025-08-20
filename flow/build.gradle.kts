@@ -60,21 +60,9 @@ android {
             isMinifyEnabled = false
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
     buildFeatures {
         viewBinding = false
         compose = false
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
-        freeCompilerArgs = listOfNotNull(
-            "-Xopt-in=kotlin.RequiresOptIn",
-            "-Xskip-prerelease-check"
-        )
     }
 
     lint {
@@ -128,7 +116,7 @@ dependencies {
 
     // val coroutineVersion = "1.5.2"
     // implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutineVersion")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
 
     // implementation("androidx.core:core-ktx:1.6.10")
     // implementation("androidx.appcompat:appcompat:1.3.1")

@@ -49,12 +49,15 @@ public abstract class se/warting/billy/flow/ProductStatus {
 
 public final class se/warting/billy/flow/ProductStatus$Available : se/warting/billy/flow/ProductStatus {
 	public fun <init> (Lse/warting/billy/flow/Product;Lcom/android/billingclient/api/ProductDetails;)V
+	public final fun buy ()V
 	public final fun buy (Lcom/android/billingclient/api/ProductDetails$SubscriptionOfferDetails;)V
 	public final fun component1 ()Lse/warting/billy/flow/Product;
 	public final fun component2 ()Lcom/android/billingclient/api/ProductDetails;
 	public final fun copy (Lse/warting/billy/flow/Product;Lcom/android/billingclient/api/ProductDetails;)Lse/warting/billy/flow/ProductStatus$Available;
 	public static synthetic fun copy$default (Lse/warting/billy/flow/ProductStatus$Available;Lse/warting/billy/flow/Product;Lcom/android/billingclient/api/ProductDetails;ILjava/lang/Object;)Lse/warting/billy/flow/ProductStatus$Available;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAllFormattedPrices ()Ljava/util/List;
+	public final fun getFormattedPrice ()Ljava/lang/String;
 	public final fun getProductDetails ()Lcom/android/billingclient/api/ProductDetails;
 	public fun getType ()Lse/warting/billy/flow/Product;
 	public fun hashCode ()I

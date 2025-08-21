@@ -9,11 +9,12 @@ Billy is a modern Android library that simplifies BillingClient integration for 
 ### Bootstrap, Build, and Test
 - **Prerequisites**: Java 21 (required), Android SDK 34-36, Gradle 9.0.0+
 - **Initial setup**: No additional setup scripts required - Gradle handles all dependencies
-- **Clean and build**: `./gradlew clean build` -- takes 1m30s to complete. **NEVER CANCEL**. Set timeout to 120+ minutes.
-- **Incremental builds**: `./gradlew build` -- takes 2-8s when up-to-date
+- **Clean and build**: `./gradlew clean build` -- takes 6+ minutes to complete on first run. **NEVER CANCEL**. Set timeout to 120+ minutes.
+- **Incremental builds**: `./gradlew build` -- takes 2-8s when up-to-date, or 6s with configuration cache
 - **CI verification**: `./gradlew check --stacktrace` -- includes linting, tests, and all checks
-- **Unit tests only**: `./gradlew test` -- takes 13s from clean. **NEVER CANCEL**. Set timeout to 30+ minutes.
+- **Unit tests only**: `./gradlew test` -- takes 12s from clean. **NEVER CANCEL**. Set timeout to 30+ minutes.
 - **Linting**: `./gradlew detekt` -- runs Kotlin linting with auto-fix enabled
+- **Auto-fix linting**: `./gradlew detekt --auto-correct` -- automatically fixes detekt issues
 - **Build sample APK**: `./gradlew :app:assembleDebug` -- creates `app/build/outputs/apk/debug/app-debug.apk`
 
 ### Sample Application Testing
@@ -92,14 +93,14 @@ Billy is a modern Android library that simplifies BillingClient integration for 
 
 ## Timing Expectations
 
-- **NEVER CANCEL**: Build may take up to 1m30s, check task up to 27s from clean state
+- **NEVER CANCEL**: Build may take up to 6+ minutes on first run, check task up to 24s from clean state
 - **Clean**: `./gradlew clean` -- 1s
-- **Full clean build**: `./gradlew clean build` -- 1m30s (**Set timeout to 120+ minutes**)
-- **Incremental build**: `./gradlew build` -- 2-8s when up-to-date
-- **Tests from clean**: `./gradlew clean test` -- 13s (**Set timeout to 30+ minutes**)
-- **Check from clean**: `./gradlew clean check` -- 27s (**Set timeout to 60+ minutes**)
+- **Full clean build**: `./gradlew clean build` -- 6+ minutes on first run (**Set timeout to 120+ minutes**)
+- **Incremental build**: `./gradlew build` -- 2-8s when up-to-date (6s with configuration cache)
+- **Tests from clean**: `./gradlew clean test` -- 12s (**Set timeout to 30+ minutes**)
+- **Check from clean**: `./gradlew clean check` -- 24s (**Set timeout to 60+ minutes**)
 - **Lint**: `./gradlew detekt` -- 1-2s when up-to-date
-- **APK build**: `./gradlew :app:assembleDebug` -- 8s when dependencies built
+- **APK build**: `./gradlew :app:assembleDebug` -- 14s when dependencies built
 
 ## Development Workflow
 
@@ -130,3 +131,5 @@ Billy is a modern Android library that simplifies BillingClient integration for 
 - **Build failures**: Check `build/reports/` directories for detailed error reports
 - **Sample app issues**: Verify `local.properties` has correct `APPLICATION_ID` for billing products
 - **Dokka warnings**: Library uses deprecated V1 plugin - warnings are expected and safe to ignore
+- **First build timing**: Initial build takes 6+ minutes due to dependency resolution and Gradle setup
+- **Performance**: Use `--configuration-cache` flag for better incremental build performance

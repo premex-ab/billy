@@ -8,6 +8,7 @@ import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingResult
+import com.android.billingclient.api.PendingPurchasesParams
 import se.warting.billy.flow.internal.AndroidActivityProvider
 import se.warting.billy.flow.internal.AndroidPurchaseLauncher
 import se.warting.billy.flow.internal.AndroidPurchasesObserver
@@ -59,9 +60,14 @@ public class BillingProvider constructor(
             context: Context
         ): BillingProvider {
 
+            val pendingPurchasesParams = PendingPurchasesParams.newBuilder()
+                .enablePrepaidPlans()
+                .enableOneTimeProducts()
+                .build()
+
             val billingClient = BillingClient.newBuilder(context)
                 .setListener(AndroidPurchasesUpdatedListener())
-                .enablePendingPurchases()
+                .enablePendingPurchases(pendingPurchasesParams)
                 .build()
 
             val purchaseObserver = AndroidPurchasesObserver(billingClient).also {

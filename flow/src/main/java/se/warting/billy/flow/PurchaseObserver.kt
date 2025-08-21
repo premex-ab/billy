@@ -1,5 +1,6 @@
 package se.warting.billy.flow
 
+import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import kotlinx.coroutines.flow.Flow
 
@@ -26,6 +27,16 @@ public interface PurchaseObserver {
     public fun getInAppPurchases(): Flow<List<Purchase>>
 
     /**
+     * @return a flow with all available subscription product details
+     */
+    public fun getAvailableSubscriptions(): Flow<List<ProductDetails>>
+
+    /**
+     * @return a flow with all available in-app product details
+     */
+    public fun getAvailableInAppProducts(): Flow<List<ProductDetails>>
+
+    /**
      * Request the observer to refresh the status of the purchases
      *
      * Note: this is called on lifecycle changes
@@ -38,4 +49,18 @@ public interface PurchaseObserver {
      * @param connected true if the observer is connected to the billing service
      */
     public fun connected(connected: Boolean)
+
+    /**
+     * Configure the product IDs for subscriptions that should be queried
+     *
+     * @param productIds list of subscription product IDs
+     */
+    public fun configureSubscriptionProducts(productIds: List<String>)
+
+    /**
+     * Configure the product IDs for in-app products that should be queried
+     *
+     * @param productIds list of in-app product IDs
+     */
+    public fun configureInAppProducts(productIds: List<String>)
 }

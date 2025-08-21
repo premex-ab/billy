@@ -9,8 +9,12 @@ public final class se/warting/billy/flow/BillingProvider : se/warting/billy/flow
 	public static final field Companion Lse/warting/billy/flow/BillingProvider$Companion;
 	public fun <init> (Lcom/android/billingclient/api/BillingClient;Lse/warting/billy/flow/PurchaseLauncher;Lse/warting/billy/flow/PurchaseObserver;)V
 	public final fun buy (Lcom/android/billingclient/api/BillingFlowParams;)Lcom/android/billingclient/api/BillingResult;
+	public fun configureInAppProducts (Ljava/util/List;)V
+	public fun configureSubscriptionProducts (Ljava/util/List;)V
 	public fun connected (Z)V
 	public fun getActiveSubscriptions ()Lkotlinx/coroutines/flow/Flow;
+	public fun getAvailableInAppProducts ()Lkotlinx/coroutines/flow/Flow;
+	public fun getAvailableSubscriptions ()Lkotlinx/coroutines/flow/Flow;
 	public final fun getBillingClient ()Lcom/android/billingclient/api/BillingClient;
 	public fun getInAppPurchases ()Lkotlinx/coroutines/flow/Flow;
 	public static final fun getInstance ()Lse/warting/billy/flow/BillingProvider;
@@ -103,8 +107,12 @@ public abstract interface class se/warting/billy/flow/PurchaseLauncher {
 }
 
 public abstract interface class se/warting/billy/flow/PurchaseObserver {
+	public abstract fun configureInAppProducts (Ljava/util/List;)V
+	public abstract fun configureSubscriptionProducts (Ljava/util/List;)V
 	public abstract fun connected (Z)V
 	public abstract fun getActiveSubscriptions ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getAvailableInAppProducts ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getAvailableSubscriptions ()Lkotlinx/coroutines/flow/Flow;
 	public abstract fun getInAppPurchases ()Lkotlinx/coroutines/flow/Flow;
 	public abstract fun getPurchases ()Lkotlinx/coroutines/flow/Flow;
 	public abstract fun getStatusFlow (Lse/warting/billy/flow/Product;)Lkotlinx/coroutines/flow/Flow;

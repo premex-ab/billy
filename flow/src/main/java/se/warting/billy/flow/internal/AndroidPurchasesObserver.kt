@@ -9,11 +9,17 @@ import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesResponseListener
+import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
+import com.android.billingclient.api.queryProductDetails
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import se.warting.billy.flow.Product
 import se.warting.billy.flow.ProductStatus
 import se.warting.billy.flow.PurchaseObserver
@@ -27,6 +33,7 @@ internal data class CombinedPurchaseData(
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@Suppress("TooManyFunctions")
 internal class AndroidPurchasesObserver(
     private val billingClient: BillingClient,
 ) : PurchaseObserver, LifecycleEventObserver {
@@ -36,6 +43,32 @@ internal class AndroidPurchasesObserver(
     }
     private val _itemPurchasesStateFlow: MutableStateFlow<List<Purchase>> by lazy {
         MutableStateFlow(listOf())
+    }
+
+    // Configuration for product discovery
+    private val _subscriptionProductIds: MutableStateFlow<List<String>> by lazy {
+        MutableStateFlow(listOf())
+    }
+    private val _inAppProductIds: MutableStateFlow<List<String>> by lazy {
+        MutableStateFlow(listOf())
+    }
+
+    // Available product details flows
+    private val _availableSubscriptions: MutableStateFlow<List<ProductDetails>> by lazy {
+        MutableStateFlow(listOf())
+    }
+    private val _availableInAppProducts: MutableStateFlow<List<ProductDetails>> by lazy {
+        MutableStateFlow(listOf())
+    }
+
+    override fun configureSubscriptionProducts(productIds: List<String>) {
+        _subscriptionProductIds.value = productIds
+        refreshAvailableProducts()
+    }
+
+    override fun configureInAppProducts(productIds: List<String>) {
+        _inAppProductIds.value = productIds
+        refreshAvailableProducts()
     }
 
     override fun getActiveSubscriptions(): Flow<List<Purchase>> {
@@ -52,6 +85,31 @@ internal class AndroidPurchasesObserver(
         ) { subs, inapps ->
             subs + inapps
         }
+    }
+
+    override fun getAvailableSubscriptions(): Flow<List<ProductDetails>> {
+        return _availableSubscriptions
+    }
+
+    override fun getAvailableInAppProducts(): Flow<List<ProductDetails>> {
+        return _availableInAppProducts
+    }
+
+    private suspend fun queryProductDetails(productIds: List<String>, productType: String): List<ProductDetails> {
+        val productList = productIds.map { productId ->
+            QueryProductDetailsParams.Product.newBuilder()
+                .setProductId(productId)
+                .setProductType(productType)
+                .build()
+        }
+
+        val productDetailsParams = QueryProductDetailsParams
+            .newBuilder()
+            .setProductList(productList)
+            .build()
+
+        val productDetailsResult = billingClient.queryProductDetails(productDetailsParams)
+        return productDetailsResult.productDetailsList ?: listOf()
     }
 
     private fun getCombinedPurchasesFlow() =
@@ -116,7 +174,6 @@ internal class AndroidPurchasesObserver(
 
     override fun refreshStatus() {
         if (isConnected) {
-
             val queryPurchasesSubsParams =
                 QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.SUBS)
                     .build()
@@ -127,11 +184,38 @@ internal class AndroidPurchasesObserver(
 
             billingClient.queryPurchasesAsync(queryPurchasesSubsParams, subsPurchasesObserver)
             billingClient.queryPurchasesAsync(queryPurchasesInAppParams, inAppPurchasesObserver)
+
+            refreshAvailableProducts()
+        }
+    }
+
+    private fun refreshAvailableProducts() {
+        if (isConnected) {
+            // Refresh subscriptions
+            val subscriptionIds = _subscriptionProductIds.value
+            if (subscriptionIds.isNotEmpty()) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val subscriptionDetails = queryProductDetails(subscriptionIds, BillingClient.ProductType.SUBS)
+                    _availableSubscriptions.value = subscriptionDetails
+                }
+            }
+
+            // Refresh in-app products
+            val inAppIds = _inAppProductIds.value
+            if (inAppIds.isNotEmpty()) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val inAppDetails = queryProductDetails(inAppIds, BillingClient.ProductType.INAPP)
+                    _availableInAppProducts.value = inAppDetails
+                }
+            }
         }
     }
 
     private var isConnected = false
     override fun connected(connected: Boolean) {
         isConnected = connected
+        if (connected) {
+            refreshAvailableProducts()
+        }
     }
 }

@@ -12,8 +12,10 @@ public final class se/warting/billy/flow/BillingProvider : se/warting/billy/flow
 	public fun connected (Z)V
 	public fun getActiveSubscriptions ()Lkotlinx/coroutines/flow/Flow;
 	public final fun getBillingClient ()Lcom/android/billingclient/api/BillingClient;
+	public fun getInAppPurchases ()Lkotlinx/coroutines/flow/Flow;
 	public static final fun getInstance ()Lse/warting/billy/flow/BillingProvider;
 	public final fun getObserver ()Lse/warting/billy/flow/PurchaseObserver;
+	public fun getPurchases ()Lkotlinx/coroutines/flow/Flow;
 	public fun getStatusFlow (Lse/warting/billy/flow/Product;)Lkotlinx/coroutines/flow/Flow;
 	public fun refreshStatus ()V
 }
@@ -103,6 +105,8 @@ public abstract interface class se/warting/billy/flow/PurchaseLauncher {
 public abstract interface class se/warting/billy/flow/PurchaseObserver {
 	public abstract fun connected (Z)V
 	public abstract fun getActiveSubscriptions ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getInAppPurchases ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getPurchases ()Lkotlinx/coroutines/flow/Flow;
 	public abstract fun getStatusFlow (Lse/warting/billy/flow/Product;)Lkotlinx/coroutines/flow/Flow;
 	public abstract fun refreshStatus ()V
 }

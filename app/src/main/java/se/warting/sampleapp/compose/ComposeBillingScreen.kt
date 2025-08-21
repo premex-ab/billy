@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import se.warting.billy.flow.Product
 import se.warting.billy.flow.ProductStatus
+import se.warting.billy.flow.BillingProvider
 
 @Composable
 fun ComposeBillingScreen() {
@@ -25,6 +26,13 @@ fun ComposeBillingScreen() {
     val earlyBirdProductStatus by earlyBirdProduct.statusFlow.collectAsState(
         initial = ProductStatus.Loading(earlyBirdProduct)
     )
+
+    // Collect all purchase history and filter to this product
+    val allHistory by BillingProvider.instance.getPurchases().collectAsState(initial = listOf())
+    val historyForProduct = remember(allHistory) {
+        allHistory
+            .sortedByDescending { it.purchaseTime }
+    }
 
     Column(
         modifier = Modifier
@@ -54,6 +62,16 @@ fun ComposeBillingScreen() {
             is ProductStatus.Loading -> Text("Loading....")
             is ProductStatus.Unavailable -> Text("Unavailable")
             is ProductStatus.Owned -> Text("Owned")
+        }
+
+        // Show previous purchases (including expired/canceled)
+        if (historyForProduct.isNotEmpty()) {
+            Text("Previous purchases:")
+            LazyColumn {
+                items(historyForProduct) { record ->
+                    Text("• ${record.purchaseTime}")
+                }
+            }
         }
     }
 }

@@ -39,12 +39,23 @@ fun ComposeBillingScreen() {
             is ProductStatus.Available -> {
 
                 Text("Available!")
+                
+                // Show the primary price using the new convenient property
+                status.formattedPrice?.let { price ->
+                    Text("Primary Price: $price")
+                }
+                
+                // Show all available prices
+                if (status.allFormattedPrices.isNotEmpty()) {
+                    Text("All Prices: ${status.allFormattedPrices.joinToString(", ")}")
+                }
 
                 LazyColumn {
                     items(status.productDetails.subscriptionOfferDetails ?: listOf()) { offer ->
                         Button(onClick = {
                             status.buy(offer)
                         }) {
+                            // Use the original verbose way for comparison
                             Text(text = "Buy ${offer.pricingPhases.pricingPhaseList.firstOrNull()!!.formattedPrice}")
                         }
                     }

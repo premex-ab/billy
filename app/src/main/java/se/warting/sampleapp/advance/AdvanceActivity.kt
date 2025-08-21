@@ -43,8 +43,11 @@ class AdvanceActivity : AppCompatActivity() {
             }
             locationText.text =
                 getString(
-                    R.string.products, when (viewData.earlyBirdStatus) {
-                        is ProductStatus.Available -> "Available"
+                    R.string.products, when (val status = viewData.earlyBirdStatus) {
+                        is ProductStatus.Available -> {
+                            val priceText = status.formattedPrice?.let { " - $it" } ?: ""
+                            "Available$priceText"
+                        }
                         is ProductStatus.Loading -> "Loading"
                         is ProductStatus.Owned -> "Owned"
                         is ProductStatus.Unavailable -> "Unavailable"

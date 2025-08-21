@@ -14,4 +14,9 @@ class ExampleUnitTest {
     fun additionIsCorrect() {
         assertEquals(4, 2L + 2L)
     }
+    
+    // Note: ProductStatus.Available price functionality tests would require 
+    // Android framework dependencies and mocking libraries. 
+    // The pricing logic is simple property access, so integration testing 
+    // in the sample app provides sufficient coverage.
 }

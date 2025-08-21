@@ -59,6 +59,12 @@ val earlyBirdProductStatus by earlyBirdProduct.statusFlow.collectAsState(
 when (val earlyBirdProduct = earlyBirdProductStatus) {
     is ProductStatus.Available -> {
         Text("Available to buy!")
+        
+        // Show the product price using the convenient property
+        earlyBirdProduct.formattedPrice?.let { price ->
+            Text("Price: $price")
+        }
+        
         Button(onClick = {
             // Launch buy flow
             earlyBirdProduct.buy(offer)
@@ -67,6 +73,7 @@ when (val earlyBirdProduct = earlyBirdProductStatus) {
         }
     }
     is ProductStatus.Loading -> Text("Loading....")
+    is ProductStatus.Unavailable -> Text("Unavailable")
     is ProductStatus.Unavailable -> Text("Unavailable")
     is ProductStatus.Owned -> Text("Owned")
 }

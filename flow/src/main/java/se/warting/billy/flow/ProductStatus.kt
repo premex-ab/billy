@@ -18,10 +18,60 @@ public sealed class ProductStatus {
 
     public data class Loading(override val type: Product) : ProductStatus()
 
+    /**
+     * Indicates that the product is available for purchase.
+     * This status provides access to pricing information through convenient properties:
+     * - [formattedPrice]: Primary price for the product (first offer's first pricing phase for subscriptions)
+     * - [allFormattedPrices]: List of all available prices across all offers and phases
+     */
     public data class Available(
         override val type: Product,
         val productDetails: ProductDetails
     ) : ProductStatus() {
+        
+        /**
+         * Gets the formatted price for the primary offer.
+         * For subscriptions, this returns the price of the first offer's first pricing phase.
+         * For in-app products, this returns the one-time purchase price.
+         * Returns null if no price information is available.
+         */
+        public val formattedPrice: String?
+            get() = when (type) {
+                is Product.Subscription -> {
+                    productDetails.subscriptionOfferDetails
+                        ?.firstOrNull()
+                        ?.pricingPhases
+                        ?.pricingPhaseList
+                        ?.firstOrNull()
+                        ?.formattedPrice
+                }
+                is Product.InAppProduct -> {
+                    productDetails.oneTimePurchaseOfferDetails?.formattedPrice
+                }
+            }
+
+        /**
+         * Gets all available formatted prices for this product.
+         * For subscriptions, this includes all pricing phases from all offers.
+         * For in-app products, this returns a list with a single price.
+         */
+        public val allFormattedPrices: List<String>
+            get() = when (type) {
+                is Product.Subscription -> {
+                    productDetails.subscriptionOfferDetails
+                        ?.flatMap { offer ->
+                            offer.pricingPhases.pricingPhaseList.mapNotNull { phase ->
+                                phase.formattedPrice
+                            }
+                        } ?: emptyList()
+                }
+                is Product.InAppProduct -> {
+                    productDetails.oneTimePurchaseOfferDetails?.formattedPrice?.let { 
+                        listOf(it) 
+                    } ?: emptyList()
+                }
+            }
+
         public fun buy(offer: ProductDetails.SubscriptionOfferDetails) {
 
             val productDetailsParams: BillingFlowParams.ProductDetailsParams =

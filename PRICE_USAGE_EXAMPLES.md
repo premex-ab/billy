@@ -1,6 +1,6 @@
 # Product Price Access Examples
 
-This document shows how to use the new price convenience properties in Billy Android Billing Library.
+This document shows how to use the new price convenience properties and purchase methods in Billy Android Billing Library.
 
 ## Before (Verbose API)
 
@@ -19,6 +19,13 @@ when (val status = product.statusFlow.collectAsState().value) {
         if (price != null) {
             Text("Price: $price")
         }
+
+        // Complex purchase flow
+        status.productDetails.subscriptionOfferDetails?.firstOrNull()?.let { offer ->
+            Button(onClick = { status.buy(offer) }) {
+                Text("Buy")
+            }
+        }
     }
     // ... other states
 }
@@ -34,6 +41,11 @@ when (val status = product.statusFlow.collectAsState().value) {
         // Simple access to the primary price
         status.formattedPrice?.let { price ->
             Text("Price: $price")
+        }
+
+        // Simple purchase - automatically handles subscription vs in-app
+        Button(onClick = { status.buy() }) {
+            Text("Buy Now")
         }
     }
     // ... other states
@@ -60,10 +72,13 @@ when (val status = product.statusFlow.collectAsState().value) {
 ### Subscription Products
 - `formattedPrice`: Returns the price of the first offer's first pricing phase
 - `allFormattedPrices`: Returns all prices from all offers and pricing phases
+- `buy()`: Purchases using the first available offer
+- `buy(offer)`: Purchases a specific subscription offer
 
 ### In-App Products
 - `formattedPrice`: Returns the one-time purchase price
 - `allFormattedPrices`: Returns a list with a single price
+- `buy()`: Purchases the in-app product
 
 ## Benefits
 
@@ -72,3 +87,4 @@ when (val status = product.statusFlow.collectAsState().value) {
 3. **Type Safety**: Works correctly with both subscription and in-app products
 4. **Backward Compatibility**: Original verbose API remains available
 5. **Multiple Offers Support**: `allFormattedPrices` handles products with multiple pricing options
+6. **Universal Purchase**: `buy()` method works for both product types automatically

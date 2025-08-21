@@ -50,13 +50,20 @@ fun ComposeBillingScreen() {
                     Text("All Prices: ${status.allFormattedPrices.joinToString(", ")}")
                 }
 
+                // Simple buy button using the new convenience method
+                Button(onClick = {
+                    status.buy() // Simplified API - automatically handles subscription vs in-app
+                }) {
+                    Text(text = "Buy Now")
+                }
+
                 LazyColumn {
                     items(status.productDetails.subscriptionOfferDetails ?: listOf()) { offer ->
                         Button(onClick = {
-                            status.buy(offer)
+                            status.buy(offer) // Specific offer purchase (existing API)
                         }) {
                             // Use the original verbose way for comparison
-                            Text(text = "Buy ${offer.pricingPhases.pricingPhaseList.firstOrNull()!!.formattedPrice}")
+                            Text(text = "Buy Specific Offer ${offer.pricingPhases.pricingPhaseList.firstOrNull()!!.formattedPrice}")
                         }
                     }
                 }

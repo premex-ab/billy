@@ -66,8 +66,8 @@ when (val earlyBirdProduct = earlyBirdProductStatus) {
         }
         
         Button(onClick = {
-            // Launch buy flow
-            earlyBirdProduct.buy(offer)
+            // Launch buy flow - simplified API
+            earlyBirdProduct.buy()
         }) {
             Text(text = "buy")
         }

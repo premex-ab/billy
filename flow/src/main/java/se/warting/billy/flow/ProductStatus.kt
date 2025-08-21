@@ -72,6 +72,10 @@ public sealed class ProductStatus {
                 }
             }
 
+        /**
+         * Initiates purchase flow for a subscription with a specific offer.
+         * @param offer The subscription offer to purchase
+         */
         public fun buy(offer: ProductDetails.SubscriptionOfferDetails) {
 
             val productDetailsParams: BillingFlowParams.ProductDetailsParams =
@@ -84,6 +88,32 @@ public sealed class ProductStatus {
                 .setProductDetailsParamsList(listOf(productDetailsParams))
                 .build()
             buy(flowParams)
+        }
+
+        /**
+         * Initiates purchase flow for this product.
+         * For subscriptions, uses the first available offer.
+         * For in-app products, uses the one-time purchase offer.
+         */
+        public fun buy() {
+            when (type) {
+                is Product.Subscription -> {
+                    productDetails.subscriptionOfferDetails?.firstOrNull()?.let { offer ->
+                        buy(offer)
+                    }
+                }
+                is Product.InAppProduct -> {
+                    val productDetailsParams: BillingFlowParams.ProductDetailsParams =
+                        BillingFlowParams.ProductDetailsParams.newBuilder()
+                            .setProductDetails(productDetails)
+                            .build()
+
+                    val flowParams = BillingFlowParams.newBuilder()
+                        .setProductDetailsParamsList(listOf(productDetailsParams))
+                        .build()
+                    buy(flowParams)
+                }
+            }
         }
 
         // maybe public?

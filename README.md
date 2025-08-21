@@ -48,6 +48,8 @@ dependencies {
 
 ## How to use
 
+### Individual Product Status
+
 All you need to do is to call collect the state of an Product and then call `buy()` when it is ready:
 
 ```
@@ -71,6 +73,44 @@ when (val earlyBirdProduct = earlyBirdProductStatus) {
     is ProductStatus.Owned -> Text("Owned")
 }
 
+```
+
+### Discover All Available Products
+
+You can now discover all available products without knowing their IDs beforehand:
+
+```
+// First, configure which product IDs you want to discover
+LaunchedEffect(Unit) {
+    BillingProvider.instance.configureSubscriptionProducts(
+        listOf("premium_monthly", "premium_yearly", "early_bird")
+    )
+    BillingProvider.instance.configureInAppProducts(
+        listOf("remove_ads", "extra_features", "unlock_content")
+    )
+}
+
+// Then collect all available products
+val availableSubscriptions by BillingProvider.instance.getAvailableSubscriptions()
+    .collectAsState(initial = emptyList())
+val availableInAppProducts by BillingProvider.instance.getAvailableInAppProducts()
+    .collectAsState(initial = emptyList())
+
+// Display all available subscriptions
+LazyColumn {
+    items(availableSubscriptions) { productDetails ->
+        Text("Subscription: ${productDetails.name}")
+        Text("Price: ${productDetails.subscriptionOfferDetails?.firstOrNull()?.pricingPhases?.pricingPhaseList?.firstOrNull()?.formattedPrice}")
+    }
+}
+
+// Display all available in-app products
+LazyColumn {
+    items(availableInAppProducts) { productDetails ->
+        Text("Product: ${productDetails.name}")
+        Text("Price: ${productDetails.oneTimePurchaseOfferDetails?.formattedPrice}")
+    }
+}
 ```
 
 For a full implementation

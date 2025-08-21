@@ -31,6 +31,24 @@ public class BillingProvider constructor(
         return purchaseLauncher.buy(billingFlowParams)
     }
 
+    /**
+     * Configure subscription product IDs that should be available for discovery
+     *
+     * @param productIds list of subscription product IDs from your Google Play Console
+     */
+    public override fun configureSubscriptionProducts(productIds: List<String>) {
+        observer.configureSubscriptionProducts(productIds)
+    }
+
+    /**
+     * Configure in-app product IDs that should be available for discovery
+     *
+     * @param productIds list of in-app product IDs from your Google Play Console
+     */
+    public override fun configureInAppProducts(productIds: List<String>) {
+        observer.configureInAppProducts(productIds)
+    }
+
     public companion object {
 
         private var _instance: BillingProvider? = null

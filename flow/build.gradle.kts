@@ -101,7 +101,7 @@ dependencies {
 
     api("androidx.startup:startup-runtime:1.2.0")
 
-    val billingVersion = "8.0.0"
+    val billingVersion = "8.2.0"
     api("com.android.billingclient:billing-ktx:$billingVersion")
 
     implementation("androidx.annotation:annotation:1.9.1")

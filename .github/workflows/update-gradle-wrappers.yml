@@ -1,0 +1,25 @@
+name: Update Gradle Wrappers
+on:
+  schedule:
+    - cron: '0 0 * * 1'  # Run weekly on Mondays
+  workflow_dispatch:
+
+jobs:
+  update-gradle-wrappers:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate GitHub App token
+        uses: actions/create-github-app-token@v2
+        id: generate-token
+        with:
+          app-id: ${{ secrets.PREMEX_POT_APP_ID }}
+          private-key: ${{ secrets.PREMEX_POT_APP_SECRET }}
+
+      - name: Update Gradle wrappers
+        uses: premex-ab/actions/update-gradle-wrapper@v1
+        with:
+          create-pr: true
+          token: ${{ steps.generate-token.outputs.token }}

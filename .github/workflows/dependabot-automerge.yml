@@ -1,0 +1,65 @@
+# Dependabot auto-merge workflow
+#
+# DO NOT EDIT — this file is managed by premex-ab/sync and will be
+# overwritten on the next sync. To make changes, edit the source at:
+# https://github.com/premex-ab/sync/blob/main/.github/workflows/dependabot-automerge.yml
+#
+# What it does:
+#   1. Triggers on dependabot PRs (pull_request_target for secret access)
+#   2. Generates a GitHub App token (Premex Pot) for elevated permissions
+#   3. Approves the PR (required by branch protection rules)
+#   4. Enables auto-merge with squash (retries up to 5 times if merge
+#      fails due to pending checks or race conditions)
+#
+# Requirements:
+#   - PREMEX_POT_APP_ID org variable and PREMEX_POT_APP_SECRET org secret
+#   - "Require approvals" branch protection on the default branch
+#   - "Allow auto-merge" enabled in repo settings
+
+name: Dependabot auto-merge
+on: pull_request_target
+
+# Minimal permissions — the app token handles approvals and merges
+permissions:
+  pull-requests: read
+  contents: read
+
+jobs:
+  dependabot:
+    runs-on: ubuntu-latest
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    steps:
+      # Generate an elevated token via the Premex Pot GitHub App.
+      # GITHUB_TOKEN can't approve its own PRs or merge with branch protection.
+      - name: Generate token
+        id: generate-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.PREMEX_POT_APP_ID }}
+          private-key: ${{ secrets.PREMEX_POT_APP_SECRET }}
+
+      - name: Dependabot metadata
+        id: dependabot-metadata
+        uses: dependabot/fetch-metadata@v2.5.0
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Approve Dependabot PRs
+        run: gh pr review --approve "$PR_URL"
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+
+      # Retry logic: merge can fail if status checks haven't reported yet
+      # or if there's a race with other merges. 5 attempts with 30s gaps
+      # covers most transient failures.
+      - name: Enable auto-merge for Dependabot PRs
+        run: |
+          for i in 1 2 3 4 5; do
+            gh pr merge --auto --squash "$PR_URL" && break
+            echo "Attempt $i failed, waiting 30s..."
+            sleep 30
+          done
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}

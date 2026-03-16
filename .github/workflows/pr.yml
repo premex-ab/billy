@@ -51,3 +51,14 @@ jobs:
           name: Reports
           path: '**/build/reports/*'
           retention-days: 2
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - build
+    steps:
+      - run: |
+          if [[ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
+            exit 1
+          fi

@@ -8,7 +8,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:8.13.2")
+        classpath("com.android.tools.build:gradle:9.1.0")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.20")
         classpath("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8")
         classpath("com.google.gms:google-services:4.4.4")
@@ -22,7 +22,6 @@ plugins {
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0" apply false
     id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.18.1"
     id("com.gladed.androidgitversion") version "0.4.14"
-    alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.compose.compiler) apply false
 }
 

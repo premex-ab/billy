@@ -1,7 +1,6 @@
 
 plugins {
     id("com.android.library")
-    id("kotlin-android")
     id("org.jetbrains.dokka") version "2.1.0"
     id("com.vanniktech.maven.publish") version "0.36.0"
 }
@@ -48,7 +47,7 @@ group = PUBLISH_GROUP_ID
 version = PUBLISH_VERSION
 
 android {
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 23

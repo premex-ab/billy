@@ -1,11 +1,11 @@
-# Dependabot auto-merge workflow
+# Auto-merge workflow for Dependabot and Premex Pot PRs
 #
 # DO NOT EDIT — this file is managed by premex-ab/sync and will be
 # overwritten on the next sync. To make changes, edit the source at:
 # https://github.com/premex-ab/sync/blob/main/.github/workflows/dependabot-automerge.yml
 #
 # What it does:
-#   1. Triggers on dependabot PRs (pull_request_target for secret access)
+#   1. Triggers on PRs from dependabot[bot] or premex-pot[bot]
 #   2. Generates a GitHub App token (Premex Pot) for elevated permissions
 #   3. Approves the PR (required by branch protection rules)
 #   4. Enables auto-merge with squash (retries up to 5 times if merge
@@ -27,24 +27,26 @@ permissions:
 jobs:
   dependabot:
     runs-on: ubuntu-latest
-    if: ${{ github.actor == 'dependabot[bot]' }}
+    if: ${{ github.actor == 'dependabot[bot]' || github.actor == 'premex-pot[bot]' }}
     steps:
       # Generate an elevated token via the Premex Pot GitHub App.
       # GITHUB_TOKEN can't approve its own PRs or merge with branch protection.
       - name: Generate token
         id: generate-token
-        uses: actions/create-github-app-token@v3
+        uses: actions/create-github-app-token@v2
         with:
           app-id: ${{ vars.PREMEX_POT_APP_ID }}
           private-key: ${{ secrets.PREMEX_POT_APP_SECRET }}
 
       - name: Dependabot metadata
+        if: ${{ github.actor == 'dependabot[bot]' }}
         id: dependabot-metadata
         uses: dependabot/fetch-metadata@v2.5.0
+        continue-on-error: true
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
 
-      - name: Approve Dependabot PRs
+      - name: Approve PR
         run: gh pr review --approve "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
@@ -53,7 +55,7 @@ jobs:
       # Retry logic: merge can fail if status checks haven't reported yet
       # or if there's a race with other merges. 5 attempts with 30s gaps
       # covers most transient failures.
-      - name: Enable auto-merge for Dependabot PRs
+      - name: Enable auto-merge
         run: |
           for i in 1 2 3 4 5; do
             gh pr merge --auto --squash "$PR_URL" && break

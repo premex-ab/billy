@@ -22,7 +22,6 @@ plugins {
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0" apply false
     id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.18.1"
     id("com.gladed.androidgitversion") version "0.4.14"
-    alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.compose.compiler) apply false
 }
 

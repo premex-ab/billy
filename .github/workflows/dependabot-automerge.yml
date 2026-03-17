@@ -46,7 +46,10 @@ jobs:
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
 
+      # Skip approval for premex-pot PRs — it can't approve its own PRs,
+      # and the org ruleset requires 0 approvals so it's not needed.
       - name: Approve PR
+        if: ${{ github.actor != 'premex-pot[bot]' }}
         run: gh pr review --approve "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}

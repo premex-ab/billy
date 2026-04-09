@@ -103,7 +103,7 @@ dependencies {
     val billingVersion = "8.3.0"
     api("com.android.billingclient:billing-ktx:$billingVersion")
 
-    implementation("androidx.annotation:annotation:1.9.1")
+    implementation("androidx.annotation:annotation:1.10.0")
 
     val lifecycle_version = "2.10.0"
 

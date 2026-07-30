@@ -66,7 +66,7 @@ dependencies {
     androidTestImplementation(composeBom)
     implementation(project(":flow"))
 
-    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
 
     implementation("androidx.core:core-ktx:1.18.0")

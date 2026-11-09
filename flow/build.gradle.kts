@@ -1,7 +1,7 @@
 
 plugins {
     id("com.android.library")
-    id("org.jetbrains.dokka") version "2.2.0"
+    id("org.jetbrains.dokka") version "2.3.0"
     id("com.vanniktech.maven.publish") version "0.37.0"
 }
 
